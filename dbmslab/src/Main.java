@@ -60,6 +60,10 @@ public class Main {
      public static void displayVetAppointment(){
      
      }
+     
+     public static void updateVetAppointmentTime(){
+     
+     }
    
     public static void main(String[] args) {
         // connectToDatabase();

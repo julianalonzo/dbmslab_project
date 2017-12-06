@@ -29,6 +29,7 @@ CREATE TABLE `appointment` (
   `room_no` varchar(45) NOT NULL,
   `vetid` int(11) NOT NULL,
   `petid` int(11) NOT NULL,
+  `status` enum('pending','done') NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`apptid`),
   KEY `vetid_idx` (`vetid`),
   KEY `petid_idx` (`petid`),
@@ -43,7 +44,7 @@ CREATE TABLE `appointment` (
 
 LOCK TABLES `appointment` WRITE;
 /*!40000 ALTER TABLE `appointment` DISABLE KEYS */;
-INSERT INTO `appointment` VALUES (1,'12-07-2017','9:00 ','101',1,2),(2,'12-07-2017','13:00','101',1,3),(3,'12-07-2017','15:00','102',2,4),(4,'12-09-2017','10:00','103',3,2),(5,'12-09-2017','14:00','102',3,1);
+INSERT INTO `appointment` VALUES (1,'12-07-2017','9:00 ','101',1,2,'pending'),(2,'12-07-2017','13:00','101',1,3,'pending'),(3,'12-07-2017','15:00','102',2,4,'pending'),(4,'12-09-2017','10:00','103',3,2,'pending'),(5,'12-09-2017','14:00','102',3,1,'pending');
 /*!40000 ALTER TABLE `appointment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -145,4 +146,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-06 21:24:46
+-- Dump completed on 2017-12-06 23:45:36

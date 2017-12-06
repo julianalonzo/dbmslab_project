@@ -52,6 +52,10 @@ public class Main {
      public static void deleteVet(){
      
      }
+     
+     public static void createVetAppointment(){
+     
+     }
    
     public static void main(String[] args) {
         // connectToDatabase();

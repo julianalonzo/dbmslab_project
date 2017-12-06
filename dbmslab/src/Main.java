@@ -6,8 +6,8 @@ public class Main {
     private static String connectionUrl = "jdbc:mysql://localhost:3306/"
             + "dbmslab?user=root&password=";
     private static Connection CONN;
-    private static Scanner console = new Scanner(System.in); 
-    
+    private static Scanner console = new Scanner(System.in);
+
     public static void connectToDatabase() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -18,7 +18,7 @@ public class Main {
             sqle.printStackTrace();
         }
     }
-    
+
     public static void showMenu() {
         System.out.println("The Vet Clinic");
         System.out.println("[1] Display all the appointments of the day");
@@ -41,17 +41,17 @@ public class Main {
         System.out.println("[16] Update owner's id");
         System.out.println("[17] Add a new pet of an existing owner");
         System.out.println("[18] View appointment information");
-        System.out.println("[18] Quit");
+        System.out.println("[19] Quit");
     }
-    
+
     public static void main(String[] args) {
         // connectToDatabase();
-        
-        int choice = 18;
+
+        int choice = 19;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
-        } while (choice != 18);
+        } while (choice != 19);
     }
 }

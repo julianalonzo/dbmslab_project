@@ -48,6 +48,10 @@ public class Main {
      public static void updateVetType(){
      
      }
+     
+     public static void deleteVet(){
+     
+     }
    
     public static void main(String[] args) {
         // connectToDatabase();

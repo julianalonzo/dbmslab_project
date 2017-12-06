@@ -47,11 +47,11 @@ public class Main {
     public static void main(String[] args) {
         // connectToDatabase();
 
-        int choice = 18;
+        int choice = 19;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
-        } while (choice != 18);
+        } while (choice != 19);
     }
 }

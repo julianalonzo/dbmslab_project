@@ -20,7 +20,7 @@ public class Main {
     public static void showMenu() {
         System.out.println("The Vet Clinic");
         System.out.println("[1] Display all the appointments");
-        System.out.println("[2] Add a new veterinarian");
+        System.out.println("[2] Add a new customer");
         System.out.println("[3] Update a veterinarian's type");
         System.out.println("[4] Delete a veterinarian");
         System.out.println("[5] Create new appointment for a veterinarian");
@@ -35,6 +35,7 @@ public class Main {
         System.out.println("[14] Display all owners who has a specific type of a species as a pet");
         System.out.println("[15] Change owner of pet");
         System.out.println("[16] Update owner's id");
+        System.out.println("[17] Add a new pet of an existing owner");
     }
     
     public static void main(String[] args) {

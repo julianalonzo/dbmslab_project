@@ -37,6 +37,10 @@ public class Main {
         System.out.println("[16] Update owner's id");
     }
     
+    public static void displayAppointments() {
+        
+    }
+    
     public static void main(String[] args) {
         // connectToDatabase();
         showMenu();

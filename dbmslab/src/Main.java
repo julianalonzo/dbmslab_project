@@ -43,6 +43,10 @@ public class Main {
         System.out.println("[18] Quit");
     }
     
+    public static void displayAppointments() {
+        
+    }
+    
     public static void main(String[] args) {
         // connectToDatabase();
         

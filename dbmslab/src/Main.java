@@ -22,7 +22,7 @@ public class Main {
     public static void showMenu() {
         System.out.println("The Vet Clinic");
         System.out.println("[1] Display all the appointments");
-        System.out.println("[2] Add a new veterinarian");
+        System.out.println("[2] Add a new customer");
         System.out.println("[3] Update a veterinarian's type");
         System.out.println("[4] Delete a veterinarian");
         System.out.println("[5] Create new appointment for a veterinarian");
@@ -39,17 +39,18 @@ public class Main {
                 + " species as a pet");
         System.out.println("[15] Change owner of pet");
         System.out.println("[16] Update owner's id");
-        System.out.println("[17] Quit");
+        System.out.println("[17] Add a new pet of an existing owner");
+        System.out.println("[18] Quit");
     }
     
     public static void main(String[] args) {
         // connectToDatabase();
         
-        int choice = 17;
+        int choice = 18;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
-        } while (choice != 17);
+        } while (choice != 18);
     }
 }

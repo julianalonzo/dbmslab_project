@@ -43,6 +43,34 @@ public class Main {
         System.out.println("[18] Quit");
     }
     
+    public static void displayAppointments() {
+        
+    }
+    
+     public static void addVeterinarian(){
+    
+    }
+     
+     public static void updateVetType(){
+     
+     }
+     
+     public static void deleteVet(){
+     
+     }
+     
+     public static void createVetAppointment(){
+     
+     }
+     
+     public static void displayVetAppointment(){
+     
+     }
+     
+     public static void updateVetAppointmentTime(){
+     
+     }
+   
     public static void main(String[] args) {
         // connectToDatabase();
         

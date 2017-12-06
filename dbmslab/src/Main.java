@@ -44,7 +44,10 @@ public class Main {
      public static void addVeterinarian(){
     
     }
-
+     
+     public static void updateVetType(){
+     
+     }
    
     public static void main(String[] args) {
         // connectToDatabase();

@@ -40,6 +40,7 @@ public class Main {
         System.out.println("[15] Change owner of pet");
         System.out.println("[16] Update owner's id");
         System.out.println("[17] Add a new pet of an existing owner");
+        System.out.println("[18] View appointment information");
         System.out.println("[18] Quit");
     }
     

@@ -1,10 +1,12 @@
 import java.sql.*;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
     // Please change dbmslab into the appropriate name of the schema
-    private static String connectionUrl = "jdbc:mysql://localhost:3306/"
-            + "dbmslab?user=root&password=";
+    private static String connectionUrl = "jdbc:mysql://localhost:8889/"
+            + "vetclinic?user=root&password=root";
     private static Connection CONN;
     private static Scanner console = new Scanner(System.in); 
     
@@ -12,10 +14,37 @@ public class Main {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             CONN = DriverManager.getConnection(connectionUrl);
+            System.out.println("connection done");
         } catch (ClassNotFoundException cne) {
             cne.printStackTrace();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
+        }
+    }
+    
+    public static void displayPetSpecies() throws SQLException {
+        System.out.println("What species? ");
+        String input = console.nextLine();
+        String stSel = "SELECT * FROM pet WHERE species ='"+input+"'";
+
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            int petid = rs.getInt(1);
+            String petname = rs.getString("pet_name");
+            String species = rs.getString("species");
+            String gender = rs.getString("gender");
+            String birthdate = rs.getString("birthdate");
+
+            System.out.printf("%3d %-25s %-25s %-25s %-25s\n", petid, petname, species, gender, birthdate);
         }
     }
     
@@ -41,17 +70,79 @@ public class Main {
         System.out.println("[16] Update owner's id");
         System.out.println("[17] Add a new pet of an existing owner");
         System.out.println("[18] View appointment information");
-        System.out.println("[18] Quit");
+        System.out.println("[19] Quit");
     }
     
-    public static void main(String[] args) {
-        // connectToDatabase();
-        
+    public static void main(String[] args) throws SQLException {
+        connectToDatabase();
         int choice = 18;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
-        } while (choice != 18);
+            
+            switch(choice) {
+                case 1:
+                    
+                    break;
+                case 2:
+                    
+                    break;
+                    
+                case 3:
+                    
+                    break;
+                    
+                case 4:
+                    
+                    break;
+                    
+                case 5:
+                    
+                    break;
+                case 6:
+                    
+                    break;
+                case 7:
+                    
+                    break;
+                case 8:
+                    
+                    break;
+                case 9:
+                    
+                    break;
+                case 10:
+                    
+                    break;
+                case 11:
+                    
+                    break;
+                case 12:
+                    
+                    break;
+                case 13:
+                    
+                    break;
+                case 14:
+                    displayPetSpecies();
+                    break;
+                case 15:
+                    
+                    break;
+                case 16:
+                    
+                    break;
+                case 17:
+                    
+                    break;
+                case 18:
+                    
+                    break;
+                case 19:
+                    System.exit(0);
+                    break;   
+            }
+        } while (choice != 19);
     }
 }

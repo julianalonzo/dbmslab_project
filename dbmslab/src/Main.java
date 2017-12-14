@@ -35,7 +35,7 @@ public class Main {
         System.out.println("[2] Add a new customer");
         System.out.println("[3] Update a veterinarian's type");
         System.out.println("[4] Delete a veterinarian record");
-        System.out.println("[5] Book a new appointment for a veterinarian");
+        System.out.println("[5] Book a new appointment");
         System.out.println("[6] Display veterinarians and their appointments");
         System.out.println("[7] Update a vet's appointment time");
         System.out.println("[8] Cancel an appointment");
@@ -213,11 +213,31 @@ public class Main {
                 System.out.println("Deletion cancelled...");
             }
             
+            resultSet.close();
+            preparedStatement.close();
             System.out.print("Press any key to continue...");
             console.nextLine();
         }
     }
     
+    public static void bookAppointment() throws SQLException {
+        System.out.print("Enter appointment date (yyyy-MM-dd): ");
+        String date = console.nextLine();
+        System.out.print("Enter appointment time (HH:mm): ");
+        String time = console.nextLine();
+        System.out.println("Enter room: ");
+        String room = console.nextLine();
+        System.out.println("Enter vet id: ");
+        String vetId = console.nextLine();
+        System.out.println("Enter pet id: ");
+        String petId = console.nextLine();
+        
+        String sql = "SELECT petid, ownerid FROM pet WHERE petid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.executeQuery();
+        
+        
+    }
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");

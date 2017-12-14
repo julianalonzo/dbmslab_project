@@ -316,6 +316,42 @@ public class Main {
         console.nextLine();
     }
     
+    public static void newPet() throws SQLException, ParseException {
+        System.out.println("\nNew Pet");
+        System.out.print("Enter name: ");
+        String petName = console.nextLine();
+        System.out.print("Enter species: ");
+        String species = console.nextLine();
+        System.out.print("Enter gender <M/F>: ");
+        String gender = console.nextLine().toUpperCase();
+        System.out.print("Enter birthdate (MM-dd-yyyy): ");
+        String birthDate = console.nextLine();
+        System.out.print("Enter owner id: ");
+        int ownerId = Integer.parseInt(console.nextLine());
+        
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date petBirthDate = dateFormat.parse(birthDate);
+        
+        
+        
+        String sql = "INSERT INTO pet(pet_name, species, pet_gender, birthdate,"
+                     + " ownerid) VALUES(?, ?, ?, ?, ?);";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        
+        preparedStatement.setString(1, petName);
+        preparedStatement.setString(2, species);
+        preparedStatement.setString(3, gender);
+        preparedStatement.setDate(4, new java.sql.Date(petBirthDate.getDate()));
+        preparedStatement.setInt(5, ownerId);
+        
+        int rowsAdded = preparedStatement.executeUpdate();
+        System.out.println((rowsAdded > 0) ? "Successfully added new pet!"
+                                           : "Add new pet failed...");
+        System.out.print("Press any key to continue...");
+        console.nextLine();
+                                        
+    }
+    
     //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
         System.out.print("Enter pet species: ");
@@ -459,7 +495,7 @@ public class Main {
                     cancelVetAppointment();
                     break;
                 case 9:
-                    
+                    newPet();
                     break;
                 case 10:
                     

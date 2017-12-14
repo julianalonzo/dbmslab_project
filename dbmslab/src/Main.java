@@ -1,10 +1,15 @@
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
     // Make sure that the URL is correct
-    private static String connectionUrl = "jdbc:mysql://localhost:8889/"
-                                          + "vetclinic?user=root&password=root";
+    private static String connectionUrl = "jdbc:mysql://localhost:3306/"
+                                          + "vetclinic?user=root&password=chelseafc";
     private static Connection CONN;
     private static Scanner console = new Scanner(System.in);
 
@@ -12,7 +17,10 @@ public class Main {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             CONN = DriverManager.getConnection(connectionUrl);
-            System.out.println("Connected to the database...");
+            System.out.println("Connection successful!");
+            System.out.print("Press any key to continue...");
+            console.nextLine();
+            System.out.println("");
         } catch (ClassNotFoundException cne) {
             cne.printStackTrace();
         } catch (SQLException sqle) {
@@ -43,6 +51,41 @@ public class Main {
         System.out.println("[17] View appointment information");
         System.out.println("[18] Finish an appointment");
         System.out.println("[19] Quit");
+    }
+    
+    public static void displayAppointments() throws SQLException {
+        Date today = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        DateFormat scheduleFormat = new SimpleDateFormat("HH:mm");
+        String query = "SELECT apptid, schedule, room_no, "
+                       + "CONCAT(vet_first_name, ' ', vet_last_name) vetname, "
+                       + "pet_name, status FROM appointment NATURAL JOIN pet "
+                       + "NATURAL JOIN veterinarian WHERE DATE(schedule) = CURDATE();";
+
+        PreparedStatement preparedStatement = CONN.prepareStatement(query);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        System.out.println("Appointments scheduled " + dateFormat.format(today) + "\n");
+        System.out.printf("%-5s%-8s%-8s%-20s%-15s%-10s%n",
+                          "ID", "Time", "Room", 
+                          "Veterinarian", "Pet", "Status");
+        while (resultSet.next()) {
+            int appointmentId = resultSet.getInt("apptid");
+            String schedule = scheduleFormat.format(resultSet.getTimestamp("schedule"));
+            String room = resultSet.getString("room_no");
+            String veterinarianName = resultSet.getString("vetname");
+            String petName = resultSet.getString("pet_name");
+            String status = resultSet.getString("status");
+            
+            System.out.printf("%-5d%-8s%-8s%-20s%-15s%-10s%n",
+                              appointmentId, schedule, room, 
+                              veterinarianName, petName, status);
+        }
+        
+        preparedStatement.close();
+        resultSet.close();
+        System.out.print("\nPress any key to continue...");
+        console.nextLine();
     }
     
     //Cancel an appointment
@@ -183,40 +226,6 @@ public class Main {
                               oid, ln, fn, g, cn);
         }
     }
-  
-  public static void updateAppointment() throws SQLException {
-        System.out.print("Enter appointment id to be updated: ");
-        int apptid = Integer.parseInt(console.nextLine());
-        System.out.print("Enter new date(MM-DD-YYYY): ");
-        String date = console.nextLine();
-        System.out.print("Enter new time(HH:MM): ");
-        String time = console.nextLine();
-
-        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment SET date ='"+date+"',time ='"+time+"' WHERE apptid="+apptid);
-        psu.executeUpdate();
-
-        String stSel = "SELECT * FROM appointment";
-        Statement stmt = null;
-        try {
-            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        ResultSet rs = stmt.executeQuery(stSel);
-
-        rs.beforeFirst();
-        while (rs.next()) {
-            int ad = rs.getInt("apptid");
-            String d = rs.getString("date");
-            String t = rs.getString("time");
-            String rm = rs.getString("room_no");
-            String status = rs.getString("status");
-
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
-        }
-
-    }
 
     public static void changeOwner() throws SQLException {
         System.out.print("Enter petid: ");
@@ -224,7 +233,7 @@ public class Main {
         System.out.println("Enter new ownerid: ");
         int ownerid = Integer.parseInt(console.nextLine());
 
-        PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid='"+ownerid"' WHERE petid="+petid);
+        PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid='"+ownerid+"' WHERE petid="+petid);
         psu.executeUpdate();
 
         String stSel = "SELECT * FROM pet";
@@ -241,12 +250,12 @@ public class Main {
 
         rs.beforeFirst();
         while (rs.next()) {
-            int petid = rs.getInt("petid");
+            int pet_id = rs.getInt("petid");
             String pet_name = rs.getString("pet_name");
             String species = rs.getString("species");
             String gender = rs.getString("gender");
             String bdate = rs.getString("bdate");
-            int ownerid = rs.getInt("ownerid");
+            int owner_id = rs.getInt("ownerid");
 
             System.out.printf("%3d %-15s %-15s %-15s %-15s\n", petid, pet_name, species, gender, bdate,ownerid);
 
@@ -263,10 +272,11 @@ public class Main {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
+            System.out.println();
             
             switch (choice) {
                 case 1:
-                    
+                    displayAppointments();
                     break;
                 case 2:
                     

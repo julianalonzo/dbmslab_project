@@ -1,25 +1,48 @@
 import java.sql.*;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
-    // Please change dbmslab into the appropriate name of the schema, also your local host, user, and password if necessary
+    // Make sure that the URL is correct
     private static String connectionUrl = "jdbc:mysql://localhost:8889/"
-            + "vetclinic?user=root&password=root";
+                                          + "vetclinic?user=root&password=root";
     private static Connection CONN;
-    private static Scanner console = new Scanner(System.in); 
-    
+    private static Scanner console = new Scanner(System.in);
+
     public static void connectToDatabase() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             CONN = DriverManager.getConnection(connectionUrl);
-            System.out.println("connection done");
+            System.out.println("Connected to the database...");
         } catch (ClassNotFoundException cne) {
             cne.printStackTrace();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+    }
+  
+    public static void showMenu() {
+        System.out.println("The Vet Clinic");
+        System.out.println("[1] Display all the appointments of the day");
+        System.out.println("[2] Add a new customer");
+        System.out.println("[3] Update a veterinarian's type");
+        System.out.println("[4] Delete a veterinarian record");
+        System.out.println("[5] Book a new appointment for a veterinarian");
+        System.out.println("[6] Display veterinarians and their appointments");
+        System.out.println("[7] Update a vet's appointment time");
+        System.out.println("[8] Cancel an appointment");
+        System.out.println("[9] Register a new pet patient");
+        System.out.println("[10] Delete a pet patient in record");
+        System.out.println("[11] Display the total number of appointments of a "
+                            + "certain pet");
+        System.out.println("[12] Update a pet's appointment");
+        System.out.println("[13] Display all owners who has a specific type of a"
+                            + " species as a pet");
+        System.out.println("[14] Change owner of pet");
+        System.out.println("[15] Update owner's id");
+        System.out.println("[16] Add a new pet of an existing owner");
+        System.out.println("[17] View appointment information");
+        System.out.println("[18] Finish an appointment");
+        System.out.println("[19] Quit");
     }
     
     //Cancel an appointment
@@ -89,25 +112,24 @@ public class Main {
     
     //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
-        System.out.println("What species? ");
+        System.out.println("Enter pet species: ");
         String input = console.nextLine();
         String stSel = "SELECT owner_last_name, owner_first_name, pet_name FROM pet NATURAL JOIN owner WHERE species ='"+input+"'";
-
-        Statement stmt = null;
+      
+        Statement statement = null;
         try {
-            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
+            statement = CONN.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
-        ResultSet rs = stmt.executeQuery(stSel);
+        ResultSet rs = statement.executeQuery(query);
 
         rs.beforeFirst();
         while (rs.next()) {
             String ownerlname = rs.getString("owner_last_name");
             String ownerfname = rs.getString("owner_first_name");
             String petname = rs.getString("pet_name");
-
+          
             System.out.println("Owner: "+ownerfname+" "+ownerlname);
             System.out.println("Pet: "+petname);
         }
@@ -147,40 +169,17 @@ public class Main {
         }
     }
     
-    public static void showMenu() {
-        System.out.println("The Vet Clinic");
-        System.out.println("[1] Display all the appointments of the day");
-        System.out.println("[2] Add a new customer");
-        System.out.println("[3] Update a veterinarian's type");
-        System.out.println("[4] Delete a veterinarian record");
-        System.out.println("[5] Book a new appointment for a veterinarian");
-        System.out.println("[6] Display veterinarians and their appointments");
-        System.out.println("[7] Update a vet's appointment time");
-        System.out.println("[8] Cancel a veterinarian's appointment");
-        System.out.println("[9] Register a new pet patient");
-        System.out.println("[10] Delete a pet patient in record");
-        System.out.println("[11] Display the total number of appointments of a "
-                + "certain pet");
-        System.out.println("[12] Update a pet's appointment");
-        System.out.println("[13] Display all owners who has a specific type of a"
-                + " species as a pet");    
-        System.out.println("[14] Change owner of pet");
-        System.out.println("[15] Update owner's contact no");
-        System.out.println("[16] Add a new pet of an existing owner");
-        System.out.println("[17] View appointment information");
-        System.out.println("[18] Finish an appointment");
-        System.out.println("[19] Quit");
-    }
-    
     public static void main(String[] args) throws SQLException {
+        
         connectToDatabase();
-        int choice = 18;
+        
+        int choice = 19;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
             choice = Integer.parseInt(console.nextLine());
             
-            switch(choice) {
+            switch (choice) {
                 case 1:
                     
                     break;
@@ -240,8 +239,13 @@ public class Main {
                     break;
                 case 19:
                     System.exit(0);
-                    break;   
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+                    break;
+                    
             }
+            
         } while (choice != 19);
     }
 }

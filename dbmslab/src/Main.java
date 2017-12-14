@@ -45,6 +45,41 @@ public class Main {
         System.out.println("[19] Quit");
     }
     
+ //display all the appointments of the day
+	public static void displayAppointment() throws SQLException {
+            String stSel = "SELECT * FROM appointment";
+
+            Statement stmt = null;
+            try {
+                stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            } catch (SQLException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            ResultSet rs = stmt.executeQuery(stSel);
+
+            rs.beforeFirst();
+            while (rs.next()) {
+                int ad = rs.getInt("apptid");
+                String d = rs.getString("date");
+                String t = rs.getString("time");
+                String rm = rs.getString("room_no");
+                int vi = rs.getInt("vetid");
+                int pi = rs.getInt("petid"); 
+                String status = rs.getString("status");
+			
+                System.out.println("Appointment ID: "+ad);
+                System.out.println("Date: "+d);
+                System.out.println("Time: "+t);
+                System.out.println("Room Number: "+rm);
+                System.out.println("Vet ID: "+vi);
+                System.out.println("Pet ID: "+pi);
+                System.out.println("Status: "+status);
+
+            }
+	}
+
+    
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");
@@ -74,6 +109,27 @@ public class Main {
             
             System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
         }
+    }
+    
+    //Register new pet
+    public static void registerNewPet() throws SQLException {
+    	System.out.print("Enter pet's id: ");
+        int pid = Integer.parseInt(console.nextLine());
+    	System.out.print("Enter pet's name: ");
+        String pname = console.nextLine();
+        System.out.print("Enter pet's species: ");
+        String pspecies = console.nextLine();
+        System.out.print("Enter pet's gender: ");
+        String pgender = console.nextLine();
+        System.out.print("Enter pet's birthdate: ");
+        String pbday = console.nextLine();
+        System.out.print("Enter pet's owner id: ");
+        int pownerid = Integer.parseInt(console.nextLine());
+        
+        PreparedStatement psu = CONN.prepareStatement("INSERT INTO pet VALUES ("+pid+",'"+pname+"','"+pspecies+"','"+pgender+"','"+pbday+"',"+pownerid+")");
+    	psu.executeUpdate();
+    	
+    
     }
     
     //Update an appointment's date and time
@@ -142,6 +198,44 @@ public class Main {
             System.out.println("Pet: " + petname);
         }
     }
+    
+    //changeOwner
+    public static void changeOwner() throws SQLException {
+	System.out.print("Enter petid: ");
+        int petid = Integer.parseInt(console.nextLine());
+        System.out.print("Enter new ownerid: ");
+	int ownerid = Integer.parseInt(console.nextLine());
+        
+	PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid ="+ownerid+"WHERE petid="+petid);
+        psu.executeUpdate();
+		
+	String stSel = "SELECT * FROM pet";
+	Statement stmt = null;
+		
+	try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+		
+	ResultSet rs = stmt.executeQuery(stSel);
+		
+	rs.beforeFirst();
+	while (rs.next()) {
+            int pid = rs.getInt("petid");
+            String pet_name = rs.getString("pet_name");
+            String species = rs.getString("species");
+            String gender = rs.getString("gender");
+            String bdate = rs.getString("bdate");
+            int oid = rs.getInt("ownerid");
+		
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", pid, pet_name, species, gender, bdate,oid);
+		
+        }
+		
+    }
+
     
     //update owner's contact no
     public static void updateOwnerContactNo() throws SQLException {
@@ -254,6 +348,39 @@ public class Main {
 
     }
     
+    //View appointment information.
+    public static void viewAppointmentInfo() throws SQLException {
+    	System.out.print("Enter appointment ID: ");
+        int apptid = Integer.parseInt(console.nextLine());
+        String stSel = "SELECT date, time, room_no, vetid, petid, status FROM appointment WHERE apptid = "+apptid;
+
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            String date = rs.getString("date");
+            String time = rs.getString("time");
+            String room_no = rs.getString("room_no");
+            int vetid = rs.getInt("vetid");
+            int petid = rs.getInt("petid");
+            String status = rs.getString("status");
+
+            System.out.println("Date: " + date);
+            System.out.println("Time: " + time);
+            System.out.println("Room Number: " + room_no);
+            System.out.println("Veterinarian ID: " + vetid);
+            System.out.println("Pet ID: " + petid);
+            System.out.println("Status: " + status);
+        }
+    }
+    
     public static void main(String[] args) throws SQLException {
         
         connectToDatabase();
@@ -266,7 +393,7 @@ public class Main {
             
             switch (choice) {
                 case 1:
-                    
+                    displayAppointment();
                     break;
                 case 2:
                     
@@ -293,7 +420,7 @@ public class Main {
                     cancelVetAppointment();
                     break;
                 case 9:
-                    
+                    registerNewPet();
                     break;
                 case 10:
                     
@@ -317,7 +444,7 @@ public class Main {
                     
                     break;
                 case 17:
-                    
+                    viewAppointmentInfo();
                     break;
                 case 18:
                     

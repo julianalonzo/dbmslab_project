@@ -70,7 +70,42 @@ public class Main {
                               petid, petname, species, gender, birthdate);
         }
     }
-    
+
+    public static void updateAppointment() throws SQLException {
+        System.out.print("Enter appointment id to be updated: ");
+        int apptid = Integer.parseInt(console.nextLine());
+        System.out.print("Enter new date(MM-DD-YYYY): ");
+        String date = console.nextLine();
+        System.out.print("Enter new time(HH:MM): ");
+        String time = console.nextLine();
+
+        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment SET date ='"+date+"',time ='"+time+"' WHERE apptid="+apptid);
+        psu.executeUpdate();
+
+        String stSel = "SELECT * FROM appointment";
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            int ad = rs.getInt("apptid");
+            String d = rs.getString("date");
+            String t = rs.getString("time");
+            String rm = rs.getString("room_no");
+            String status = rs.getString("status");
+
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
+        }
+
+    }
+
+
     public static void main(String[] args) throws SQLException {
         
         connectToDatabase();

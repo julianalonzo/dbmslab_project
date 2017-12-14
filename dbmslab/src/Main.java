@@ -184,11 +184,11 @@ public class Main {
                     
                     break;
                 case 2:
-                    
+                    addCost();
                     break;
                     
                 case 3:
-                    
+                    updVet();
                     break;
                     
                 case 4:
@@ -199,7 +199,7 @@ public class Main {
                     
                     break;
                 case 6:
-                    
+                    showVetApt();
                     break;
                 case 7:
                     
@@ -211,7 +211,7 @@ public class Main {
                     
                     break;
                 case 10:
-                    
+                    delPet();
                     break;
                 case 11:
                     
@@ -247,5 +247,128 @@ public class Main {
             }
             
         } while (choice != 19);
+    }
+//2
+    private static void addCost() throws Exception {
+        System.out.print("Owner ID: ");
+        int no = Integer.parseInt(console.nextLine());
+        System.out.print("Last Name: ");
+        String lname = console.nextLine();
+        System.out.print("First Name: ");
+        String fname = console.nextLine();
+        System.out.print("Gender (M/F): ");
+        String gender = console.nextLine();
+        System.out.print("Contact No: ");
+        String cp = console.nextLine();
+        PreparedStatement pstm;
+        String query = "insert into owner values (?, ?, ?, ?, ?)";
+        pstm = CONN.prepareStatement(query);
+        pstm.setInt(1, no);
+        pstm.setString(2, lname);
+        pstm.setString(3, fname);
+        pstm.setString(4, gender);
+        pstm.setString(5, cp);
+        pstm.executeUpdate();
+        System.out.print("Pet ID: ");
+        int pno = Integer.parseInt(console.nextLine());
+        System.out.print("Pet Name: ");
+        String pname = console.nextLine();
+        System.out.print("Species: ");
+        String spe = console.nextLine();
+        System.out.print("Pet gender (M/F): ");
+        gender = console.nextLine();
+        System.out.print("Birth date: ");
+        String bdate = console.nextLine();
+        query = "insert into pet values (?, ?, ?, ?, ?, ?)";
+        pstm = CONN.prepareStatement(query);
+        pstm.setInt(1, pno);
+        pstm.setString(2, pname);
+        pstm.setString(3, spe);
+        pstm.setString(4, gender);
+        pstm.setString(5, bdate);
+        pstm.setInt(6, no);
+        pstm.executeUpdate();
+    }
+    
+    //3
+    private static void updVet() throws Exception{
+        String lName = "";
+        String fName = "";
+        PreparedStatement pstm;
+        while (true) {
+            System.out.print("Vet Last Name: ");
+            lName = console.nextLine();
+            System.out.print("Vet First Name: ");
+            fName = console.nextLine();
+            String query = "select * from veterinarian where vet_first_name = ? and vet_last_name = ?";
+            pstm = CONN.prepareStatement(query);
+            pstm.setString(1, fName);
+            pstm.setString(2, lName);
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next() == false) {
+                System.out.println("The name you entered is not on the database!");
+                System.out.println("Please press enter to continue...");
+                console.nextLine();
+            } else {
+                break;
+            }
+        }
+        System.out.print("New type (permanent/visiting): ");
+        String perm = console.nextLine();
+        String query = "update veterinarian set vet_type = ? where vet_first_name = ? and vet_last_name =?";
+        pstm = CONN.prepareStatement(query);
+        pstm.setString(1, perm);
+        pstm.setString(2, fName);
+        pstm.setString(3, lName);
+        pstm.executeUpdate();
+    }
+    
+    //6
+    private static void showVetApt() throws Exception {
+        ResultSet rs;
+        Statement stm = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        String query = "select * from veterinarian join appointment using (vetid);";
+        rs = stm.executeQuery(query);
+        rs.beforeFirst();
+        System.out.printf("%-7s %-16s %-15s %-12s %-10s %-16s %-8s %-11s %-7s %-10s %-8s %-1s %n", "vetid", "Vet First Name", "Vet Last Name", "Vet Gender", "Vet Type", "Vet Contact No", "apptid", "Date", "Time", "Room No", "petid", "Status");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        while(rs.next()) {
+            int vetid = rs.getInt("vetid");
+            int apptid = rs.getInt("apptid");
+            int petid = rs.getInt("petid");
+            String vet_first_name = rs.getString("vet_first_name");
+            String vet_last_name = rs.getString("vet_last_name");
+            String vet_gender = rs.getString("vet_gender");
+            String vet_type = rs.getString("vet_type");
+            String vet_contact_no = rs.getString("vet_contact_no");
+            String date = rs.getString("date");
+            String time = rs.getString("time");
+            String room_no = rs.getString("room_no");
+            String status = rs.getString("status");
+            System.out.printf("%-7s %-16s %-15s %-12s %-10s %-16s %-8s %-11s %-7s %-10s %-8s %-1s %n", vetid, vet_first_name, vet_last_name, vet_gender, vet_type, vet_contact_no, apptid, date, time, room_no, petid, status);
+        }
+    }
+    
+    private static void delPet() throws Exception{
+        System.out.print("Enter pet id : ");
+        int petid = Integer.parseInt(console.nextLine());
+        String query = "select * from pet where petid = ?";
+        PreparedStatement pstm = CONN.prepareStatement(query);
+        pstm.setInt(1, petid);
+        ResultSet rs = pstm.executeQuery();
+        if (rs.next() == false) {
+            System.out.println("Pet id not found!");
+            System.out.println("Please press enter to continue...");
+            console.nextLine();
+            delPet();
+        } else {
+            query = "delete from pet where petid = ?";
+            pstm = CONN.prepareStatement(query);
+            pstm.setInt(1, petid);
+            pstm.executeUpdate();
+            System.out.println("Pet Removed!");
+            System.out.println("Please press enter to continue...");
+            console.nextLine();
+        }
     }
 }

@@ -44,15 +44,14 @@ public class Main {
         System.out.println("[10] Delete a pet patient in record");
         System.out.println("[11] Display the total number of appointments of a "
                             + "certain pet");
-        System.out.println("[12] Update a pet's appointment");
-        System.out.println("[13] Display all owners who has a specific type of a"
+        System.out.println("[12] Display all owners who has a specific type of a"
                             + " species as a pet");
-        System.out.println("[14] Change owner of pet");
-        System.out.println("[15] Update owner's id");
-        System.out.println("[16] Add a new pet of an existing owner");
-        System.out.println("[17] View appointment information");
-        System.out.println("[18] Finish an appointment");
-        System.out.println("[19] Quit");
+        System.out.println("[13] Change owner of pet");
+        System.out.println("[14] Update owner's id");
+        System.out.println("[15] Add a new pet of an existing owner");
+        System.out.println("[16] View appointment information");
+        System.out.println("[17] Finish an appointment");
+        System.out.println("[18] Quit");
     }
     
     public static void displayAppointments() throws SQLException {
@@ -352,6 +351,42 @@ public class Main {
                                         
     }
     
+    public static void deletePet() throws SQLException {
+        System.out.println("\nDelete Pet");
+        System.out.print("Enter pet id to be deleted: ");
+        int petId = Integer.parseInt(console.nextLine());
+        
+        String sql = "SELECT pet_name FROM pet WHERE petid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.setInt(1, petId);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        String choice = "N";
+        if (resultSet.next()) {
+            String petName = resultSet.getString(1);
+            System.out.print("Are you sure you want to delete " + petName 
+                               + "<Y/N>? ");
+            choice = console.nextLine().toUpperCase();
+            
+            if (choice.equals("Y")) {
+                sql = "DELETE FROM pet WHERE petid = ?;";
+                preparedStatement = CONN.prepareStatement(sql);
+                preparedStatement.setInt(1, petId);
+                int rowsDeleted = preparedStatement.executeUpdate();
+                System.out.println((rowsDeleted > 0) ? "Successfully deleted pet!"
+                                                     : "Nothing was deleted...");
+            } else {
+                System.out.println("Deletion cancelled...");
+            }
+            
+            resultSet.close();
+            preparedStatement.close();
+            System.out.print("Press any key to continue...");
+            console.nextLine();
+        }
+    }
+    
     //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
         System.out.print("Enter pet species: ");
@@ -498,7 +533,7 @@ public class Main {
                     newPet();
                     break;
                 case 10:
-                    
+                    deletePet();
                     break;
                 case 11:
                     

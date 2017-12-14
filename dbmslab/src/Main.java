@@ -128,6 +128,55 @@ public class Main {
         preparedStatement.close();
     }
     
+    public static void updateVetType() throws SQLException {
+        System.out.println("\nUpdate Vet Type");
+        
+        String choice = "N";
+        String vetId = "";
+        String sql = "SELECT CONCAT(vet_first_name, ' ', vet_last_name), vet_type"
+                     + " FROM veterinarian WHERE vetid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        
+        do {
+            System.out.print("Enter veterinarian id: ");
+            vetId = console.nextLine();
+            preparedStatement.setString(1, vetId);
+            
+            ResultSet resultSet = preparedStatement.executeQuery();
+            
+            while (resultSet.next() && choice.equals("N")) {
+                String name = resultSet.getString(1);
+                String type = resultSet.getString(2);
+                
+                System.out.printf("%n%-15s%-10s%n", name, type);
+                System.out.print("Is this the vet you want to edit <Y/N>? ");
+                choice = console.nextLine().toUpperCase();
+                
+                if (choice.equals("Y")) {
+                    sql = "UPDATE veterinarian SET vet_type = ?;";
+                    preparedStatement = CONN.prepareStatement(sql);
+                    System.out.print("Enter new type <Permanent/Visiting>: ");
+                    String newType = console.nextLine().toLowerCase();
+                    newType = newType.substring(0, 1) + newType.substring(1);
+                    
+                    preparedStatement.setString(1, newType);
+                    
+                    int rowsUpdated = preparedStatement.executeUpdate();
+                    System.out.println((rowsUpdated > 0)
+                                        ? "Type was successfully updated!"
+                                        : "Nothing was updated...");
+                    
+                    System.out.print("Press any key to continue...");
+                    console.nextLine();
+                    
+                    preparedStatement.close();
+                } else {
+                    System.out.println("Try again");
+                }
+            }
+        } while (choice.equals("N"));
+    }
+    
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");
@@ -321,9 +370,8 @@ public class Main {
                 case 2:
                     addNewCustomer();
                     break;
-                    
                 case 3:
-                    
+                    updateVetType();
                     break;
                     
                 case 4:

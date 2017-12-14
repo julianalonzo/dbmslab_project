@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Main {
-    // Please change dbmslab into the appropriate name of the schema
+    // Please change dbmslab into the appropriate name of the schema, also your local host, user, and password if necessary
     private static String connectionUrl = "jdbc:mysql://localhost:8889/"
             + "vetclinic?user=root&password=root";
     private static Connection CONN;
@@ -22,10 +22,76 @@ public class Main {
         }
     }
     
+    //Cancel an appointment
+    public static void cancelVetAppointment() throws SQLException {
+        System.out.print("Enter appointment id: ");
+        int apptid = Integer.parseInt(console.nextLine());
+        
+        PreparedStatement psu = CONN.prepareStatement("DELETE FROM appointment WHERE apptid="+apptid);
+        psu.executeUpdate();
+        
+        String stSel = "SELECT * FROM appointment";
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+        
+        rs.beforeFirst();
+        while (rs.next()) {
+            int ad = rs.getInt("apptid");
+            String d = rs.getString("date");
+            String t = rs.getString("time");
+            String rm = rs.getString("room_no");
+            String status = rs.getString("status");
+            
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
+        }
+    }
+    
+    //Update an appointment's date and time
+    public static void updateAppointment() throws SQLException {
+        System.out.print("Enter appointment id to be updated: ");
+        int apptid = Integer.parseInt(console.nextLine());
+        System.out.print("Enter new date(MM-DD-YYYY): ");
+        String date = console.nextLine();
+        System.out.print("Enter new time(HH:MM): ");
+        String time = console.nextLine();
+        
+        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment SET date ='"+date+"',time ='"+time+"' WHERE apptid="+apptid);
+        psu.executeUpdate();
+        
+        String stSel = "SELECT * FROM appointment";
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+        
+        rs.beforeFirst();
+        while (rs.next()) {
+            int ad = rs.getInt("apptid");
+            String d = rs.getString("date");
+            String t = rs.getString("time");
+            String rm = rs.getString("room_no");
+            String status = rs.getString("status");
+            
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
+        }
+
+    }
+    
+    //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
         System.out.println("What species? ");
         String input = console.nextLine();
-        String stSel = "SELECT * FROM pet WHERE species ='"+input+"'";
+        String stSel = "SELECT owner_last_name, owner_first_name, pet_name FROM pet NATURAL JOIN owner WHERE species ='"+input+"'";
 
         Statement stmt = null;
         try {
@@ -38,13 +104,46 @@ public class Main {
 
         rs.beforeFirst();
         while (rs.next()) {
-            int petid = rs.getInt(1);
+            String ownerlname = rs.getString("owner_last_name");
+            String ownerfname = rs.getString("owner_first_name");
             String petname = rs.getString("pet_name");
-            String species = rs.getString("species");
-            String gender = rs.getString("gender");
-            String birthdate = rs.getString("birthdate");
 
-            System.out.printf("%3d %-25s %-25s %-25s %-25s\n", petid, petname, species, gender, birthdate);
+            System.out.println("Owner: "+ownerfname+" "+ownerlname);
+            System.out.println("Pet: "+petname);
+        }
+    }
+    
+    //update owner's contact no
+    public static void updateOwnerContactNo() throws SQLException {
+        System.out.print("Enter owner's first name: ");
+        String fname = console.nextLine();
+        System.out.print("Enter owner's last name: ");
+        String lname = console.nextLine();
+        System.out.print("Enter new contact number: ");
+        String contact = console.nextLine();
+        
+        PreparedStatement psu = CONN.prepareStatement("UPDATE owner SET owner_contact_no ='"+contact+"' WHERE owner_last_name='"+lname+"' AND owner_first_name='"+fname+"'");
+        psu.executeUpdate();
+        
+        String stSel = "SELECT * from owner";
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            int oid = rs.getInt("ownerid");
+            String ln = rs.getString("owner_last_name");
+            String fn = rs.getString("owner_first_name");
+            String g = rs.getString("owner_gender");
+            String cn = rs.getString("owner_contact_no");
+            
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", oid, ln, fn, g, cn);
         }
     }
     
@@ -63,13 +162,13 @@ public class Main {
         System.out.println("[11] Display the total number of appointments of a "
                 + "certain pet");
         System.out.println("[12] Update a pet's appointment");
-        System.out.println("[13] Cancel a pet's appointment");
-        System.out.println("[14] Display all owners who has a specific type of a"
-                + " species as a pet");
-        System.out.println("[15] Change owner of pet");
-        System.out.println("[16] Update owner's id");
-        System.out.println("[17] Add a new pet of an existing owner");
-        System.out.println("[18] View appointment information");
+        System.out.println("[13] Display all owners who has a specific type of a"
+                + " species as a pet");    
+        System.out.println("[14] Change owner of pet");
+        System.out.println("[15] Update owner's contact no");
+        System.out.println("[16] Add a new pet of an existing owner");
+        System.out.println("[17] View appointment information");
+        System.out.println("[18] Finish an appointment");
         System.out.println("[19] Quit");
     }
     
@@ -107,7 +206,7 @@ public class Main {
                     
                     break;
                 case 8:
-                    
+                    cancelVetAppointment();
                     break;
                 case 9:
                     
@@ -119,16 +218,16 @@ public class Main {
                     
                     break;
                 case 12:
-                    
+                    updateAppointment();
                     break;
                 case 13:
-                    
-                    break;
-                case 14:
                     displayPetSpecies();
                     break;
-                case 15:
+                case 14:
                     
+                    break;
+                case 15:
+                    updateOwnerContactNo();
                     break;
                 case 16:
                     

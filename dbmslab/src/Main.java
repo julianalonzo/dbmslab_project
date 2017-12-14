@@ -108,7 +108,7 @@ public class Main {
             String t = rs.getString("time");
             String rm = rs.getString("room_no");
             String status = rs.getString("status");
-            
+          
             System.out.printf("%3d %-15s %-15s %-15s %-15s\n", 
                               ad, d, t, rm, status);
         }
@@ -119,6 +119,7 @@ public class Main {
     public static void displayPetSpecies() throws SQLException {
         System.out.print("Enter pet species: ");
         String input = console.nextLine();
+      
         String query = "SELECT owner_last_name, owner_first_name, pet_name "
                        + "FROM pet NATURAL JOIN owner "
                        + "WHERE species = '" + input + "';";
@@ -136,7 +137,7 @@ public class Main {
             String ownerlname = rs.getString("owner_last_name");
             String ownerfname = rs.getString("owner_first_name");
             String petname = rs.getString("pet_name");
-          
+       
             System.out.println("Owner: " + ownerfname + " " + ownerlname);
             System.out.println("Pet: " + petname);
         }

@@ -105,6 +105,42 @@ public class Main {
 
     }
 
+    public static void changeOwner() throws SQLException {
+        System.out.print("Enter petid: ");
+        int petid = Integer.parseInt(console.nextLine());
+        System.out.println("Enter new ownerid: ");
+        int ownerid = Integer.parseInt(console.nextLine());
+
+        PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid='"+ownerid"' WHERE petid="+petid);
+        psu.executeUpdate();
+
+        String stSel = "SELECT * FROM pet";
+        Statement stmt = null;
+
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            int petid = rs.getInt("petid");
+            String pet_name = rs.getString("pet_name");
+            String species = rs.getString("species");
+            String gender = rs.getString("gender");
+            String bdate = rs.getString("bdate");
+            int ownerid = rs.getInt("ownerid");
+
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", petid, pet_name, species, gender, bdate,ownerid);
+
+        }
+
+    }
+
 
     public static void main(String[] args) throws SQLException {
         

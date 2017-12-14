@@ -47,11 +47,8 @@ public class Main {
         System.out.println("[12] Display all owners who has a specific type of a"
                             + " species as a pet");
         System.out.println("[13] Change owner of pet");
-        System.out.println("[14] Update owner's id");
-        System.out.println("[15] Add a new pet of an existing owner");
-        System.out.println("[16] View appointment information");
-        System.out.println("[17] Finish an appointment");
-        System.out.println("[18] Quit");
+        System.out.println("[14] Finish an appointment");
+        System.out.println("[15] Quit");
     }
     
     public static void displayAppointments() throws SQLException {
@@ -413,32 +410,69 @@ public class Main {
         console.nextLine();
     }
     
-    //display owners who have this certain type of pet
+    // Display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
+        System.out.println("\nDisplay Pet Species Owner");
         System.out.print("Enter pet species: ");
-        String input = console.nextLine();
+        String species = console.nextLine();
       
-        String query = "SELECT owner_last_name, owner_first_name, pet_name "
+        String sql = "SELECT CONCAT(owner_last_name, ' ', owner_first_name), pet_name "
                        + "FROM pet NATURAL JOIN owner "
-                       + "WHERE species = '" + input + "';";
+                       + "WHERE species = ?;";
       
-        Statement statement = null;
-        try {
-            statement = CONN.createStatement();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.setString(1, species);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        System.out.printf("%n%-20s%-10s%n", "Owner", "Pet");
+        while (resultSet.next()) {
+            String ownerName = resultSet.getString(1);
+            String petName = resultSet.getString(2);
+            
+            System.out.printf("%-20s%-10s%n", ownerName, petName);
         }
-        ResultSet rs = statement.executeQuery(query);
+        
+        resultSet.close();
+        preparedStatement.close();
+        System.out.print("Press any key to continue...");
+        console.nextLine();
+    }
+    
+    public static void changeOwner() throws SQLException {
+        System.out.print("Enter petid: ");
+        int petid = Integer.parseInt(console.nextLine());
+        System.out.println("Enter new ownerid: ");
+        int ownerid = Integer.parseInt(console.nextLine());
+
+        PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid='"+ownerid+"' WHERE petid="+petid);
+        psu.executeUpdate();
+
+        String stSel = "SELECT * FROM pet";
+        Statement stmt = null;
+
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ResultSet rs = stmt.executeQuery(stSel);
 
         rs.beforeFirst();
         while (rs.next()) {
-            String ownerlname = rs.getString("owner_last_name");
-            String ownerfname = rs.getString("owner_first_name");
-            String petname = rs.getString("pet_name");
-       
-            System.out.println("Owner: " + ownerfname + " " + ownerlname);
-            System.out.println("Pet: " + petname);
+            int pet_id = rs.getInt("petid");
+            String pet_name = rs.getString("pet_name");
+            String species = rs.getString("species");
+            String gender = rs.getString("gender");
+            String bdate = rs.getString("bdate");
+            int owner_id = rs.getInt("ownerid");
+
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", petid, pet_name, species, gender, bdate,ownerid);
+
         }
+
     }
     
     //update owner's contact no
@@ -480,42 +514,6 @@ public class Main {
             System.out.printf("%3d %-15s %-15s %-15s %-15s\n", 
                               oid, ln, fn, g, cn);
         }
-    }
-
-    public static void changeOwner() throws SQLException {
-        System.out.print("Enter petid: ");
-        int petid = Integer.parseInt(console.nextLine());
-        System.out.println("Enter new ownerid: ");
-        int ownerid = Integer.parseInt(console.nextLine());
-
-        PreparedStatement psu = CONN.prepareStatement("UPDATE pet SET ownerid='"+ownerid+"' WHERE petid="+petid);
-        psu.executeUpdate();
-
-        String stSel = "SELECT * FROM pet";
-        Statement stmt = null;
-
-        try {
-            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        ResultSet rs = stmt.executeQuery(stSel);
-
-        rs.beforeFirst();
-        while (rs.next()) {
-            int pet_id = rs.getInt("petid");
-            String pet_name = rs.getString("pet_name");
-            String species = rs.getString("species");
-            String gender = rs.getString("gender");
-            String bdate = rs.getString("bdate");
-            int owner_id = rs.getInt("ownerid");
-
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", petid, pet_name, species, gender, bdate,ownerid);
-
-        }
-
     }
     
     public static void main(String[] args) throws SQLException, ParseException {
@@ -564,30 +562,20 @@ public class Main {
                     displayTotalAppointments();
                     break;
                 case 12:
-                    break;
-                case 13:
                     displayPetSpecies();
                     break;
-                case 14:
+                case 13:
                     changeOwner();
                     break;
+                case 14:
+                    
+                    break;
                 case 15:
-                    updateOwnerContactNo();
-                    break;
-                case 16:
-                    
-                    break;
-                case 17:
-                    
-                    break;
-                case 18:
                     System.out.println("Goodbye!");
                     System.exit(0);
-                    break;
                 default:
-                    System.out.println("Invalid option. Please try again.");
-                    break;
-                    
+                    System.out.println("Invalid option!");
+                    System.exit(0);
             }
             
         } while (choice != 18);

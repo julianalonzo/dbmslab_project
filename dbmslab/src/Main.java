@@ -246,7 +246,7 @@ public class Main {
         String sql = "SELECT CONCAT(vet_first_name, ' ', vet_last_name), "
                      + "apptid, schedule, room_no, status "
                      + "FROM appointment NATURAL JOIN veterinarian "
-                     + "ORDER BY 1, 3";
+                     + "ORDER BY 1, 3;";
         Statement statement = CONN.createStatement();
 
         ResultSet resultSet = statement.executeQuery(sql);
@@ -282,7 +282,7 @@ public class Main {
         DateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date appointmentSchedule = dateTime.parse(date + " " + time);
         
-        String sql = "UPDATE appointment SET schedule = ? WHERE apptid = ?";
+        String sql = "UPDATE appointment SET schedule = ? WHERE apptid = ?;";
         PreparedStatement preparedStatement = CONN.prepareStatement(sql);
         preparedStatement.setDate(1, new java.sql.Date(appointmentSchedule.getDate()));
         preparedStatement.setString(2, appointmentId);
@@ -299,33 +299,21 @@ public class Main {
     
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
-        System.out.print("Enter appointment id: ");
-        int apptid = Integer.parseInt(console.nextLine());
+        System.out.println("\nCancel Veterininarian Appointment");
+        System.out.print("Enter appointment ID: ");
+        String appointmentId = console.nextLine();
         
-        PreparedStatement psu = CONN.prepareStatement("DELETE FROM appointment "
-                                                      + "WHERE apptid="+apptid);
-        psu.executeUpdate();
+        String sql = "DELETE FROM appointment WHERE apptid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.setString(1, appointmentId);
         
-        String stSel = "SELECT * FROM appointment";
-        Statement stmt = null;
-        try {
-            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        ResultSet rs = stmt.executeQuery(stSel);
+        int rowsDeleted = preparedStatement.executeUpdate();
+        System.out.println((rowsDeleted > 0) ? "Successfully cancelled appointment!"
+                                             : "Delete failed!");
+        preparedStatement.close();
         
-        rs.beforeFirst();
-        while (rs.next()) {
-            int ad = rs.getInt("apptid");
-            String d = rs.getString("date");
-            String t = rs.getString("time");
-            String rm = rs.getString("room_no");
-            String status = rs.getString("status");
-            
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
-        }
+        System.out.print("Press any key to continue...");
+        console.nextLine();
     }
     
     //display owners who have this certain type of pet

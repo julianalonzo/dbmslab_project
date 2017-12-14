@@ -50,7 +50,8 @@ public class Main {
         System.out.print("Enter appointment id: ");
         int apptid = Integer.parseInt(console.nextLine());
         
-        PreparedStatement psu = CONN.prepareStatement("DELETE FROM appointment WHERE apptid="+apptid);
+        PreparedStatement psu = CONN.prepareStatement("DELETE FROM appointment "
+                                                      + "WHERE apptid="+apptid);
         psu.executeUpdate();
         
         String stSel = "SELECT * FROM appointment";
@@ -59,7 +60,7 @@ public class Main {
             stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         ResultSet rs = stmt.executeQuery(stSel);
         
@@ -84,7 +85,10 @@ public class Main {
         System.out.print("Enter new time(HH:MM): ");
         String time = console.nextLine();
         
-        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment SET date ='"+date+"',time ='"+time+"' WHERE apptid="+apptid);
+        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment "
+                                                      + "SET date ='"+date+"', "
+                                                      + "time ='"+time+"' "
+                                                      + "WHERE apptid="+apptid);
         psu.executeUpdate();
         
         String stSel = "SELECT * FROM appointment";
@@ -93,7 +97,7 @@ public class Main {
             stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         ResultSet rs = stmt.executeQuery(stSel);
         
@@ -104,17 +108,21 @@ public class Main {
             String t = rs.getString("time");
             String rm = rs.getString("room_no");
             String status = rs.getString("status");
-            
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
+          
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", 
+                              ad, d, t, rm, status);
         }
 
     }
     
     //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
-        System.out.println("Enter pet species: ");
+        System.out.print("Enter pet species: ");
         String input = console.nextLine();
-        String stSel = "SELECT owner_last_name, owner_first_name, pet_name FROM pet NATURAL JOIN owner WHERE species ='"+input+"'";
+      
+        String query = "SELECT owner_last_name, owner_first_name, pet_name "
+                       + "FROM pet NATURAL JOIN owner "
+                       + "WHERE species = '" + input + "';";
       
         Statement statement = null;
         try {
@@ -129,9 +137,9 @@ public class Main {
             String ownerlname = rs.getString("owner_last_name");
             String ownerfname = rs.getString("owner_first_name");
             String petname = rs.getString("pet_name");
-          
-            System.out.println("Owner: "+ownerfname+" "+ownerlname);
-            System.out.println("Pet: "+petname);
+       
+            System.out.println("Owner: " + ownerfname + " " + ownerlname);
+            System.out.println("Pet: " + petname);
         }
     }
     
@@ -144,7 +152,13 @@ public class Main {
         System.out.print("Enter new contact number: ");
         String contact = console.nextLine();
         
-        PreparedStatement psu = CONN.prepareStatement("UPDATE owner SET owner_contact_no ='"+contact+"' WHERE owner_last_name='"+lname+"' AND owner_first_name='"+fname+"'");
+        PreparedStatement psu = CONN.prepareStatement("UPDATE owner SET "
+                                                      + "owner_contact_no ='"
+                                                      + contact + "' "
+                                                      + "WHERE owner_last_name='"
+                                                      + lname 
+                                                      + "' AND owner_first_name='"
+                                                      +fname+"'");
         psu.executeUpdate();
         
         String stSel = "SELECT * from owner";
@@ -153,7 +167,7 @@ public class Main {
             stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
         } catch (SQLException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         ResultSet rs = stmt.executeQuery(stSel);
 
@@ -165,7 +179,8 @@ public class Main {
             String g = rs.getString("owner_gender");
             String cn = rs.getString("owner_contact_no");
             
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", oid, ln, fn, g, cn);
+            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", 
+                              oid, ln, fn, g, cn);
         }
     }
     

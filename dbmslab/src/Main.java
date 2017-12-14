@@ -44,8 +44,37 @@ public class Main {
         System.out.println("[19] Quit");
     }
 
-    public static void displayAppointments(){
-        
+    public static void displayAppointments() throws SQLException {
+        String stSel = "SELECT * FROM appointment";
+
+        Statement stmt = null;
+        try {
+            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        ResultSet rs = stmt.executeQuery(stSel);
+
+        rs.beforeFirst();
+        while (rs.next()) {
+            int ad = rs.getInt("apptid");
+            String d = rs.getString("date");
+            String t = rs.getString("time");
+            String rm = rs.getString("room_no");
+            int vi = rs.getString("vetid");
+            int pi = rs.getInt("petid");
+            String status = rs.getString("status");
+
+            System.out.println("Appointment ID: "+apptid);
+            System.out.println("Date: "+date);
+            System.out.println("Time: "+time);
+            System.out.println("Room Number: "+room_no);
+            System.out.println("Vet ID: "+vetid);
+            System.out.println("Pet ID: "+petid);
+            System.out.println("Status: "+status);
+
+        }
     }
 
     public static void main(String[] args) {

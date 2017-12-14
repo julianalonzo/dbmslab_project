@@ -1,6 +1,7 @@
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.sql.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
@@ -267,6 +268,35 @@ public class Main {
         System.out.print("\nPress any key to continue...");
         console.nextLine();
     }
+    
+    // Update an appointment's date and time
+    public static void updateAppointment() throws SQLException, ParseException {
+        System.out.println("Update an Appointment");
+        System.out.print("Enter appointment ID to be updated: ");
+        String appointmentId = console.nextLine();
+        System.out.print("Enter new date (MM-dd-yyyy): ");
+        String date = console.nextLine();
+        System.out.print("Enter new time (HH:mm): ");
+        String time = console.nextLine();
+        
+        DateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date appointmentSchedule = dateTime.parse(date + " " + time);
+        
+        String sql = "UPDATE appointment SET schedule = ? WHERE apptid = ?";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.setDate(1, new java.sql.Date(appointmentSchedule.getDate()));
+        preparedStatement.setString(2, appointmentId);
+
+        int rowsUpdated = preparedStatement.executeUpdate();
+        
+        System.out.println((rowsUpdated > 0) ? "Appointment schedule successfully updated!"
+                                             : "Failed to update schedule and time...");
+        
+        System.out.println("Press any key to continue...");
+        console.nextLine();
+    }
+    
+    
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");
@@ -296,45 +326,6 @@ public class Main {
             
             System.out.printf("%3d %-15s %-15s %-15s %-15s\n", ad, d, t, rm, status);
         }
-    }
-    
-    //Update an appointment's date and time
-    public static void updateAppointment() throws SQLException {
-        System.out.print("Enter appointment id to be updated: ");
-        int apptid = Integer.parseInt(console.nextLine());
-        System.out.print("Enter new date(MM-DD-YYYY): ");
-        String date = console.nextLine();
-        System.out.print("Enter new time(HH:MM): ");
-        String time = console.nextLine();
-        
-        PreparedStatement psu = CONN.prepareStatement("UPDATE appointment "
-                                                      + "SET date ='"+date+"', "
-                                                      + "time ='"+time+"' "
-                                                      + "WHERE apptid="+apptid);
-        psu.executeUpdate();
-        
-        String stSel = "SELECT * FROM appointment";
-        Statement stmt = null;
-        try {
-            stmt = CONN.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        ResultSet rs = stmt.executeQuery(stSel);
-        
-        rs.beforeFirst();
-        while (rs.next()) {
-            int ad = rs.getInt("apptid");
-            String d = rs.getString("date");
-            String t = rs.getString("time");
-            String rm = rs.getString("room_no");
-            String status = rs.getString("status");
-          
-            System.out.printf("%3d %-15s %-15s %-15s %-15s\n", 
-                              ad, d, t, rm, status);
-        }
-
     }
     
     //display owners who have this certain type of pet
@@ -442,7 +433,7 @@ public class Main {
 
     }
     
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         
         connectToDatabase();
         
@@ -474,7 +465,7 @@ public class Main {
                     displayVetAppointments();
                     break;
                 case 7:
-                    
+                    updateAppointment();
                     break;
                 case 8:
                     cancelVetAppointment();
@@ -489,7 +480,6 @@ public class Main {
                     
                     break;
                 case 12:
-                    updateAppointment();
                     break;
                 case 13:
                     displayPetSpecies();

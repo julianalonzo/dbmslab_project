@@ -1,3 +1,4 @@
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -175,6 +176,46 @@ public class Main {
                 }
             }
         } while (choice.equals("N"));
+    }
+    
+    public static void deleteVet() throws SQLException {
+        System.out.println("\nDelete a Veterinarian");
+        String sql = "SELECT CONCAT(vet_first_name, ' ', vet_last_name) "
+                     + "FROM veterinarian WHERE vetid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        String choice = "N";
+        
+        System.out.print("Enter vet id: ");
+        String vetId = console.nextLine();
+        preparedStatement.setString(1, vetId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        if (resultSet.next()) {
+            String name = resultSet.getString(1);
+            System.out.print("Are you sure you want to delete " + name 
+                               + "<Y/N>? ");
+            choice = console.nextLine().toUpperCase();
+            
+            if (choice.equals("Y")) {
+                sql = "DELETE FROM veterinarian WHERE vetid = ?;";
+                preparedStatement = CONN.prepareStatement(sql);
+                preparedStatement.setString(1, vetId);
+                try {
+                    int rowsDeleted = preparedStatement.executeUpdate();
+                    System.out.println((rowsDeleted > 0) ? "Successfully deleted vet!"
+                                                         : "Nothing was deleted...");
+                    
+                } catch (MySQLIntegrityConstraintViolationException sqe) {
+                    sqe.printStackTrace();
+                }
+                
+            } else {
+                System.out.println("Deletion cancelled...");
+            }
+            
+            System.out.print("Press any key to continue...");
+            console.nextLine();
+        }
     }
     
     //Cancel an appointment
@@ -373,9 +414,8 @@ public class Main {
                 case 3:
                     updateVetType();
                     break;
-                    
                 case 4:
-                    
+                    deleteVet();
                     break;
                     
                 case 5:

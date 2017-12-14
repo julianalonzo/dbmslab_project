@@ -387,6 +387,32 @@ public class Main {
         }
     }
     
+    public static void displayTotalAppointments() throws SQLException {
+        System.out.println("\nDisplay Total Appointments of Pet");
+        System.out.print("Enter pet ID: ");
+        int petId = Integer.parseInt(console.nextLine());
+        
+        String sql = "SELECT pet_name, CONCAT(owner_first_name, ' ', owner_last_name),"
+                     + " COUNT(appointment.petid) FROM pet NATURAL JOIN "
+                     + "appointment NATURAL JOIN owner WHERE petid = ?;";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        preparedStatement.setInt(1, petId);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        while (resultSet.next()) {
+            System.out.println("\n\nPet ID: " + petId);
+            System.out.println("Pet Name: " + resultSet.getString(1));
+            System.out.println("Owner Name: " + resultSet.getString(2));
+            System.out.println("No. of Appointments: " + resultSet.getInt(3));
+        }
+        
+        resultSet.close();
+        preparedStatement.close();
+        System.out.print("Press any key to continue...");
+        console.nextLine();
+    }
+    
     //display owners who have this certain type of pet
     public static void displayPetSpecies() throws SQLException {
         System.out.print("Enter pet species: ");
@@ -496,7 +522,7 @@ public class Main {
         
         connectToDatabase();
         
-        int choice = 19;
+        int choice = 18;
         do {
             showMenu();
             System.out.print("\nEnter choice: ");
@@ -516,7 +542,6 @@ public class Main {
                 case 4:
                     deleteVet();
                     break;
-                    
                 case 5:
                     
                     break;
@@ -536,7 +561,7 @@ public class Main {
                     deletePet();
                     break;
                 case 11:
-                    
+                    displayTotalAppointments();
                     break;
                 case 12:
                     break;
@@ -556,9 +581,6 @@ public class Main {
                     
                     break;
                 case 18:
-                    
-                    break;
-                case 19:
                     System.out.println("Goodbye!");
                     System.exit(0);
                     break;
@@ -568,6 +590,6 @@ public class Main {
                     
             }
             
-        } while (choice != 19);
+        } while (choice != 18);
     }
 }

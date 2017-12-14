@@ -238,6 +238,35 @@ public class Main {
         
         
     }
+    
+    public static void displayVetAppointments() throws SQLException {
+        System.out.println("\nDisplay Vet Appointments");
+        DateFormat scheduleFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+        String sql = "SELECT CONCAT(vet_first_name, ' ', vet_last_name), "
+                     + "apptid, schedule, room_no, status "
+                     + "FROM appointment NATURAL JOIN veterinarian "
+                     + "ORDER BY 1, 3";
+        Statement statement = CONN.createStatement();
+
+        ResultSet resultSet = statement.executeQuery(sql);
+       
+        while (resultSet.next()) {
+            String veterinarianName = resultSet.getString(1);
+            int appointmentId = resultSet.getInt(2);
+            String schedule = scheduleFormat.format(resultSet.getTimestamp(3));
+            String room = resultSet.getString(4);
+            String status = resultSet.getString(5);
+            
+            System.out.printf("%-15s%-5s%-25s%-6s%-10s%n", 
+                              veterinarianName, appointmentId, 
+                              schedule, room, status);
+        }
+        
+        resultSet.close();
+        statement.close();
+        System.out.print("\nPress any key to continue...");
+        console.nextLine();
+    }
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");
@@ -442,7 +471,7 @@ public class Main {
                     
                     break;
                 case 6:
-                    
+                    displayVetAppointments();
                     break;
                 case 7:
                     

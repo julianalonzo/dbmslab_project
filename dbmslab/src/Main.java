@@ -88,6 +88,46 @@ public class Main {
         console.nextLine();
     }
     
+    public static void addNewCustomer() throws SQLException {  
+        System.out.println("Add new Customer\n");
+        System.out.print("Enter first name: ");
+        String lastName = console.nextLine();
+        System.out.print("Enter last name: ");
+        String firstName = console.nextLine();
+        String gender = "";
+        
+        do {
+            System.out.print("Enter gender <M/F>: ");
+            gender = console.nextLine().toUpperCase();
+            
+            if (!"MF".contains(gender)) {
+                System.out.println("Invalid input! Please enter M or F only.");
+                System.out.println("Please try again...");
+            }
+        } while (!"MF".contains(gender));
+        
+        System.out.print("Enter contact number: ");
+        String contactNumber = console.nextLine();
+        
+        String sql = "INSERT INTO owner(owner_last_name, owner_first_name, "
+             + "owner_gender, owner_contact_no) VALUES(?, ?, ?, ?);";
+        PreparedStatement preparedStatement = CONN.prepareStatement(sql);
+        
+        preparedStatement.setString(1, lastName);
+        preparedStatement.setString(2, firstName);
+        preparedStatement.setString(3, gender);
+        preparedStatement.setString(4, contactNumber);
+        
+        int rowsInserted = preparedStatement.executeUpdate();
+        System.out.println((rowsInserted > 0)
+                            ? "A new customer was successfully added!"
+                            : "Nothing was inserted...");
+        System.out.println("Press any key to continue...");
+        console.nextLine();
+        
+        preparedStatement.close();
+    }
+    
     //Cancel an appointment
     public static void cancelVetAppointment() throws SQLException {
         System.out.print("Enter appointment id: ");
@@ -279,7 +319,7 @@ public class Main {
                     displayAppointments();
                     break;
                 case 2:
-                    
+                    addNewCustomer();
                     break;
                     
                 case 3:
@@ -333,6 +373,7 @@ public class Main {
                     
                     break;
                 case 19:
+                    System.out.println("Goodbye!");
                     System.exit(0);
                     break;
                 default:
